@@ -58,3 +58,9 @@ Running applications:
 ```bash
 yarn start
 ```
+
+## Reformatting the Code
+
+```bash
+yarn prettier . --write
+```
