@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import './App.css';
 
 interface Values {
   url: string;
@@ -14,30 +15,42 @@ interface Values {
 const App = () => {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<any>()
-
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
-    // 👇 encode the data to application/x-www-form-urlencoded type
-    const formData = new URLSearchParams();
-    formData.append("url", url);
     // 👇 call backend endpoint using fetch API
-    fetch("localhost:5000/api/transcribe", {
-      body: formData.toString(),
+    setLoading(true)
+    fetch("http://127.0.0.1:5000/api/transcribe", {
+      body:JSON.stringify({"url": url}),
       method: "post",
       headers: {
         "content-type": "application/json",
       },
     }).then(async (result) => {
       // 👇 modify the state to show the result
-      setResult(await result.json());
-    });
+      const resp = await result.json()
+      setResult(resp.transcript)
+      setLoading(false)
+    })
+  };
+
+  const handleChange =  (
+    event: any
+  ) => {
+    setUrl(event.target.value)
   };
 
   return (
     <Container component="main" maxWidth="xs">
+      {loading ? (
+        <Box>
+        
+        <div className="spinner"></div>
+        </Box>
+      ) : (
       <Box
           sx={{
             marginTop: 8,
@@ -59,6 +72,7 @@ const App = () => {
               name="url"
               autoComplete="url"
               autoFocus
+              onChange={handleChange}
             />
             <Button
               type="submit"
@@ -68,11 +82,17 @@ const App = () => {
             >
               Transcribe
             </Button>
-
-            Result
-      <pre>{JSON.stringify(result, null, 4)}</pre>
         </Box>
+        <Typography component="h5" variant="h5">
+          Transcript
+        </Typography>
+        <Box sx={{ mt: 3, mb: 2, width: '75%'}}>
+          {result}
+        </Box>
+
+            
       </Box>
+      )}
     </Container>
   );
 };
