@@ -1,8 +1,9 @@
 import json
 
 from flask import Flask, abort, request
-from transcriber import Transcriber
 from flask_cors import CORS
+
+from transcriber import Transcriber
 
 app = Flask(__name__)
 CORS(app)
