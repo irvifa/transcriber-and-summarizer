@@ -2,9 +2,10 @@ import json
 
 from flask import Flask, abort, request
 from transcriber import Transcriber
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 transcriber = Transcriber()
 
@@ -19,8 +20,10 @@ def get_transcript_from_video_url():
             abort(400)
         try:
             transcript = transcriber.transcribe(video_url)
+            # transcript = "test"
             return json.dumps({"transcript": transcript})
-        except:
+        except Exception as e:
+            print(e)
             abort(500)
 
 
